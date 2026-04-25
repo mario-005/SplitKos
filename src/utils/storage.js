@@ -15,11 +15,42 @@ export function loadAppState() {
 
     if (!Array.isArray(parsed.groups)) return structuredCloneSafe(EMPTY_STATE_V1)
 
-    return {
+    const next = {
       selectedGroupId:
         typeof parsed.selectedGroupId === 'string' ? parsed.selectedGroupId : null,
       groups: parsed.groups,
     }
+
+    // Lightweight migration to ensure required fields exist
+    next.groups = (next.groups ?? []).map((g) => {
+      const members = Array.isArray(g?.members) ? g.members : []
+      const memberIds = members.map((m) => m.id).filter(Boolean)
+      const transactions = Array.isArray(g?.transactions) ? g.transactions : []
+
+      return {
+        targetAmount: g?.targetAmount ?? null,
+        ...g,
+        members,
+        transactions: transactions.map((tx) => {
+          const dueDateISO = tx?.dueDateISO ?? tx?.dateISO ?? ''
+          const paidDateISO =
+            tx?.paidDateISO ?? (tx?.isSettled ? tx?.dateISO ?? dueDateISO : '')
+
+          const participantMemberIds = Array.isArray(tx?.participantMemberIds)
+            ? tx.participantMemberIds
+            : memberIds
+
+          return {
+            ...tx,
+            dueDateISO,
+            paidDateISO,
+            participantMemberIds,
+          }
+        }),
+      }
+    })
+
+    return next
   } catch {
     return structuredCloneSafe(EMPTY_STATE_V1)
   }

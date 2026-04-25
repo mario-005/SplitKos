@@ -30,10 +30,18 @@ export function calcBalances(group) {
     const payerId = tx.paidByMemberId
     if (!payerId || !(payerId in balances)) continue
 
-    const share = amount / memberCount
+    const participantIds = Array.isArray(tx.participantMemberIds)
+      ? tx.participantMemberIds
+      : members.map((m) => m.id)
 
-    for (const m of members) {
-      balances[m.id] = round2(balances[m.id] - share)
+    const validParticipants = participantIds.filter((id) => id && id in balances)
+    const participantCount = validParticipants.length
+    if (participantCount === 0) continue
+
+    const share = amount / participantCount
+
+    for (const memberId of validParticipants) {
+      balances[memberId] = round2(balances[memberId] - share)
     }
     balances[payerId] = round2(balances[payerId] + amount)
   }

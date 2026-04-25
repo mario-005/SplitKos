@@ -6,15 +6,16 @@ Web app sederhana untuk mencatat patungan/split bill antar teman kos.
 
 - Buat grup patungan (mis. "Kos A", "Trip Bali")
 - Tambah anggota ke grup
-- Catat transaksi (siapa bayar, jumlah, untuk apa, tanggal)
+- Catat transaksi (siapa bayar, jumlah, untuk apa, tanggal, siapa yang ikut)
 - Status transaksi: **lunas** / **belum lunas**
 - Edit & hapus transaksi
 - Sistem otomatis menghitung:
 	- Total hutang tiap orang
 	- Siapa berhutang ke siapa (daftar transfer)
 - Target total per grup (budget) + progress terpakai
+- Payment Streak per anggota (berdasarkan ketepatan bayar vs due date)
 
-Catatan: perhitungan transaksi diasumsikan **dibagi rata ke semua anggota** dalam grup.
+Catatan: perhitungan transaksi diasumsikan **dibagi rata ke anggota yang dipilih di “Yang ikut”**.
 
 ## Menjalankan
 
@@ -45,8 +46,8 @@ npm run preview
 ## Ringkas Logic Perhitungan Hutang
 
 1. Untuk setiap transaksi yang **belum lunas**:
-	 - Misal anggota = N, amount = A, maka tiap orang punya share = A / N
-	 - Semua anggota: saldo -= share
+	 - Misal participants = P, amount = A, maka tiap orang punya share = A / P
+	 - Semua participants: saldo -= share
 	 - Payer: saldo += A
 2. Saldo akhir:
 	 - Saldo positif = orang tersebut **harus dibayar**

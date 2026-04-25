@@ -76,13 +76,26 @@ export function AppProvider({ children }) {
           const paidByMemberId = txInput.paidByMemberId
           if (!paidByMemberId) return g
 
+          const memberIds = (g.members ?? []).map((m) => m.id).filter(Boolean)
+          const participantMemberIds = Array.isArray(txInput.participantMemberIds)
+            ? txInput.participantMemberIds
+            : memberIds
+          if (participantMemberIds.length === 0) return g
+
+          const dueDateISO = String(txInput.dueDateISO ?? txInput.dateISO ?? '').slice(0, 10)
+          const paidDateISO = String(txInput.paidDateISO ?? '').slice(0, 10)
+          const isSettled = txInput.isSettled === true
+
           const tx = {
             id: newId('tx'),
             paidByMemberId,
             amount,
             note: String(txInput.note ?? '').trim(),
             dateISO: String(txInput.dateISO ?? '').slice(0, 10),
-            isSettled: Boolean(txInput.isSettled),
+            dueDateISO,
+            paidDateISO: isSettled ? paidDateISO : '',
+            participantMemberIds,
+            isSettled,
           }
 
           return {
@@ -119,10 +132,24 @@ export function AppProvider({ children }) {
               if (patch.dateISO !== undefined)
                 next.dateISO = String(patch.dateISO ?? '').slice(0, 10)
 
+              if (patch.dueDateISO !== undefined)
+                next.dueDateISO = String(patch.dueDateISO ?? '').slice(0, 10)
+
+              if (patch.paidDateISO !== undefined)
+                next.paidDateISO = String(patch.paidDateISO ?? '').slice(0, 10)
+
+              if (patch.participantMemberIds !== undefined) {
+                next.participantMemberIds = Array.isArray(patch.participantMemberIds)
+                  ? patch.participantMemberIds
+                  : tx.participantMemberIds
+              }
+
               if (patch.paidByMemberId !== undefined)
                 next.paidByMemberId = patch.paidByMemberId
 
-              if (patch.isSettled !== undefined) next.isSettled = Boolean(patch.isSettled)
+              if (patch.isSettled !== undefined) next.isSettled = patch.isSettled === true
+
+              if (!next.isSettled) next.paidDateISO = ''
 
               return next
             }),

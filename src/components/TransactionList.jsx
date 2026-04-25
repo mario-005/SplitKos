@@ -9,6 +9,10 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10)
 }
 
+function uniq(arr) {
+  return Array.from(new Set(arr))
+}
+
 export default function TransactionList() {
   const { selectedGroup, actions } = useApp()
 
@@ -22,6 +26,9 @@ export default function TransactionList() {
     amount: '',
     note: '',
     dateISO: todayISO(),
+    dueDateISO: todayISO(),
+    paidDateISO: '',
+    participantMemberIds: [],
     isSettled: false,
   })
 
@@ -62,6 +69,9 @@ export default function TransactionList() {
       amount: '',
       note: '',
       dateISO: todayISO(),
+      dueDateISO: todayISO(),
+      paidDateISO: '',
+      participantMemberIds: stableMembers.map((m) => m.id),
       isSettled: false,
     })
     setOpenTx(true)
@@ -69,11 +79,17 @@ export default function TransactionList() {
 
   function openEditTx(tx) {
     setEditingTxId(tx.id)
+    const fallbackParticipants = stableMembers.map((m) => m.id)
     setTxForm({
       paidByMemberId: tx.paidByMemberId,
       amount: String(tx.amount ?? ''),
       note: tx.note ?? '',
       dateISO: tx.dateISO ?? todayISO(),
+      dueDateISO: tx.dueDateISO ?? tx.dateISO ?? todayISO(),
+      paidDateISO: tx.paidDateISO ?? (tx.isSettled ? tx.dateISO ?? '' : ''),
+      participantMemberIds: Array.isArray(tx.participantMemberIds)
+        ? tx.participantMemberIds
+        : fallbackParticipants,
       isSettled: Boolean(tx.isSettled),
     })
     setOpenTx(true)
@@ -208,6 +224,12 @@ export default function TransactionList() {
                       </span>
                       <span>
                         Tanggal: <span className="text-slate-700">{tx.dateISO ?? '-'}</span>
+                      </span>
+                      <span>
+                        Due: <span className="text-slate-700">{tx.dueDateISO ?? '-'}</span>
+                      </span>
+                      <span>
+                        Paid: <span className="text-slate-700">{tx.paidDateISO ?? '-'}</span>
                       </span>
                     </div>
                   </div>
@@ -369,6 +391,9 @@ export default function TransactionList() {
           onSubmit={(e) => {
             e.preventDefault()
             if (!txForm.paidByMemberId) return
+            if (!Array.isArray(txForm.participantMemberIds) || txForm.participantMemberIds.length === 0) return
+            if (!txForm.dueDateISO) return
+            if (txForm.isSettled && !txForm.paidDateISO) return
 
             if (editingTxId) {
               actions.updateTransaction(selectedGroup.id, editingTxId, {
@@ -376,6 +401,9 @@ export default function TransactionList() {
                 amount: Number(txForm.amount),
                 note: txForm.note,
                 dateISO: txForm.dateISO,
+                dueDateISO: txForm.dueDateISO,
+                paidDateISO: txForm.isSettled ? txForm.paidDateISO : '',
+                participantMemberIds: txForm.participantMemberIds,
                 isSettled: txForm.isSettled,
               })
             } else {
@@ -384,6 +412,9 @@ export default function TransactionList() {
                 amount: Number(txForm.amount),
                 note: txForm.note,
                 dateISO: txForm.dateISO,
+                dueDateISO: txForm.dueDateISO,
+                paidDateISO: txForm.isSettled ? txForm.paidDateISO : '',
+                participantMemberIds: txForm.participantMemberIds,
                 isSettled: txForm.isSettled,
               })
             }
@@ -422,7 +453,7 @@ export default function TransactionList() {
               placeholder="Contoh: 150000"
             />
             <div className="mt-1 text-xs text-slate-500">
-              Catatan: transaksi dibagi rata ke semua anggota grup.
+              Catatan: transaksi dibagi rata ke anggota yang dipilih di “Yang ikut”.
             </div>
           </label>
 
@@ -449,15 +480,77 @@ export default function TransactionList() {
               />
             </label>
 
+            <label className="block">
+              <div className="text-xs font-medium text-slate-700">Jatuh tempo (dueDate)</div>
+              <input
+                type="date"
+                value={txForm.dueDateISO}
+                onChange={(e) =>
+                  setTxForm((p) => ({ ...p, dueDateISO: e.target.value }))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
+              />
+            </label>
+          </div>
+
+          <label className="block">
+            <div className="text-xs font-medium text-slate-700">Participants</div>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {stableMembers.map((m) => {
+                const checked = (txForm.participantMemberIds ?? []).includes(m.id)
+                return (
+                  <label
+                    key={m.id}
+                    className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) => {
+                        const next = e.target.checked
+                          ? uniq([...(txForm.participantMemberIds ?? []), m.id])
+                          : (txForm.participantMemberIds ?? []).filter((id) => id !== m.id)
+                        setTxForm((p) => ({ ...p, participantMemberIds: next }))
+                      }}
+                    />
+                    <span className="text-sm text-slate-700">{m.name}</span>
+                  </label>
+                )
+              })}
+            </div>
+            <div className="mt-1 text-xs text-slate-500">
+              Wajib pilih minimal 1 participant.
+            </div>
+          </label>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
               <input
                 type="checkbox"
                 checked={txForm.isSettled}
-                onChange={(e) =>
-                  setTxForm((p) => ({ ...p, isSettled: e.target.checked }))
-                }
+                onChange={(e) => {
+                  const checked = e.target.checked
+                  setTxForm((p) => ({
+                    ...p,
+                    isSettled: checked,
+                    paidDateISO: checked ? p.paidDateISO || todayISO() : '',
+                  }))
+                }}
               />
               <span className="text-sm text-slate-700">Lunas</span>
+            </label>
+
+            <label className="block">
+              <div className="text-xs font-medium text-slate-700">Tanggal dibayar (paidDate)</div>
+              <input
+                type="date"
+                value={txForm.paidDateISO}
+                onChange={(e) =>
+                  setTxForm((p) => ({ ...p, paidDateISO: e.target.value }))
+                }
+                disabled={!txForm.isSettled}
+                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 disabled:bg-slate-50 disabled:text-slate-400"
+              />
             </label>
           </div>
 

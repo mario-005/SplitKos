@@ -5,6 +5,7 @@ import {
   calcTransfersFromBalances,
   formatIDR,
 } from '../utils/calc'
+import { calculateStreak, getBadge } from '../utils/streak'
 
 const EMPTY = []
 
@@ -37,6 +38,23 @@ export default function Summary() {
     for (const m of members) map.set(m.id, m)
     return map
   }, [members])
+
+  const streakRows = useMemo(() => {
+    const txs = selectedGroup?.transactions ?? EMPTY
+
+    const rows = members.map((m) => {
+      const streak = calculateStreak(txs, m)
+      return {
+        memberId: m.id,
+        name: m.name,
+        streak,
+        badge: getBadge(streak),
+      }
+    })
+
+    rows.sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name))
+    return rows
+  }, [members, selectedGroup])
 
   if (!selectedGroup) {
     return (
@@ -128,6 +146,74 @@ export default function Summary() {
             })}
           </ul>
         </div>
+      </div>
+
+      <div className="mt-3 rounded-lg border border-slate-200 p-3">
+        <div className="flex items-center justify-between">
+          <div className="text-xs font-medium text-slate-700">Streak Pembayaran</div>
+          <div className="text-xs text-slate-500">
+            Dihitung dari transaksi lunas: paidDate ≤ dueDate
+          </div>
+        </div>
+
+        <ul className="mt-2 space-y-2">
+          {streakRows.length === 0 ? (
+            <li className="text-sm text-slate-500">Belum ada anggota.</li>
+          ) : null}
+
+          {streakRows.map((r) => {
+            const hot = r.streak >= 5
+            return (
+              <li key={r.memberId} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="truncate text-sm font-medium text-slate-900">{r.name}</div>
+                    {hot ? <span className="text-sm">🔥</span> : null}
+                  </div>
+                  <div className="mt-0.5 text-xs text-slate-500">{r.badge}</div>
+                </div>
+
+                <div className="shrink-0 text-sm font-semibold text-slate-900">
+                  {r.streak}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+
+      <div className="mt-3 rounded-lg border border-slate-200 p-3">
+        <div className="flex items-center justify-between">
+          <div className="text-xs font-medium text-slate-700">Streak Pembayaran</div>
+          <div className="text-xs text-slate-500">
+            Dihitung dari transaksi lunas: paidDate ≤ dueDate
+          </div>
+        </div>
+
+        <ul className="mt-2 space-y-2">
+          {streakRows.length === 0 ? (
+            <li className="text-sm text-slate-500">Belum ada anggota.</li>
+          ) : null}
+
+          {streakRows.map((r) => {
+            const hot = r.streak >= 5
+            return (
+              <li key={r.memberId} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="truncate text-sm font-medium text-slate-900">{r.name}</div>
+                    {hot ? <span className="text-sm">🔥</span> : null}
+                  </div>
+                  <div className="mt-0.5 text-xs text-slate-500">{r.badge}</div>
+                </div>
+
+                <div className="shrink-0 text-sm font-semibold text-slate-900">
+                  {r.streak}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )
