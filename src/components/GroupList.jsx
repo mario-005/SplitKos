@@ -14,21 +14,21 @@ export default function GroupList() {
   const selectedId = selectedGroup?.id ?? null
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-slate-900">Grup</h2>
+    <section className="glass-card rounded-2xl p-5">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <h2 className="text-lg font-bold tracking-tight text-brand-950">Grup</h2>
         <button
           type="button"
-          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+          className="rounded-full bg-brand-900 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-brand-800 transition-all hover:shadow-lg hover:-translate-y-0.5"
           onClick={() => setOpen(true)}
         >
           Buat Grup
         </button>
       </div>
 
-      <ul className="mt-2 space-y-1.5">
+      <ul className="space-y-2">
         {groups.length === 0 ? (
-          <li className="rounded-lg border border-dashed border-slate-200 p-2 text-sm text-slate-500">
+          <li className="rounded-xl border border-dashed border-brand-200 p-4 text-center text-sm font-medium text-brand-500">
             Belum ada grup.
           </li>
         ) : null}
@@ -41,14 +41,14 @@ export default function GroupList() {
                 type="button"
                 onClick={() => actions.selectGroup(g.id)}
                 className={
-                  'w-full rounded-lg border px-2.5 py-1.5 text-left transition ' +
+                  'w-full rounded-xl px-4 py-3 text-left transition-all duration-300 ' +
                   (active
-                    ? 'border-slate-900 bg-slate-50'
-                    : 'border-slate-200 hover:bg-slate-50')
+                    ? 'bg-brand-900 text-white shadow-md transform scale-[1.02]'
+                    : 'bg-transparent text-brand-900 hover:bg-brand-50 border border-transparent hover:border-brand-100')
                 }
               >
-                <div className="text-sm font-medium text-slate-900">{g.name}</div>
-                <div className="mt-0.5 text-xs text-slate-500">
+                <div className={`text-base font-bold ${active ? 'text-white' : 'text-brand-900'}`}>{g.name}</div>
+                <div className={`mt-1 text-xs font-medium ${active ? 'text-brand-200' : 'text-brand-500'}`}>
                   {(g.members?.length ?? 0)} anggota • {(g.transactions?.length ?? 0)} transaksi
                 </div>
               </button>
@@ -75,20 +75,20 @@ export default function GroupList() {
           }}
         >
           <label className="block">
-            <div className="text-xs font-medium text-slate-700">Nama grup</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-brand-600 mb-2">Nama grup</div>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
+              className="w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-sm font-medium text-brand-900 outline-none focus:border-brand-500 focus:bg-white transition-colors"
               placeholder="Contoh: Kos A, Trip Bali"
               autoFocus
             />
           </label>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50"
+              className="rounded-xl px-5 py-2.5 text-sm font-bold text-brand-600 hover:bg-brand-50 transition-colors"
               onClick={() => {
                 setOpen(false)
                 setName('')
@@ -98,7 +98,7 @@ export default function GroupList() {
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="rounded-xl bg-brand-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-800 transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
               Simpan
             </button>

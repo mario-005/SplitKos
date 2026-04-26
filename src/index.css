@@ -6,9 +6,40 @@
   html,
   body {
     height: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-slate-50 text-slate-800;
+    @apply bg-[#f8fafc] text-brand-900;
   }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-glass;
+  }
+  .glass-dark {
+    @apply bg-brand-900/80 backdrop-blur-lg border border-brand-800 shadow-glass text-white;
+  }
+  .glass-card {
+    @apply bg-white/90 backdrop-blur-sm border border-slate-100 shadow-soft;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-200 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-300;
 }

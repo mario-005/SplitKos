@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import confetti from 'canvas-confetti'
 import { useApp } from '../context/AppContext'
 import { formatIDR } from '../utils/calc'
 import Modal from './Modal'
@@ -97,24 +98,24 @@ export default function TransactionList() {
 
   if (!selectedGroup) {
     return (
-      <section className="rounded-lg border border-slate-200 bg-white p-2.5">
-        <div className="text-sm text-slate-600">Pilih atau buat grup dulu.</div>
+      <section className="glass-card rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
+        <div className="text-base font-medium text-brand-500">Pilih atau buat grup dulu.</div>
       </section>
     )
   }
 
   return (
-    <section className="space-y-2.5">
-      <div className="rounded-lg border border-slate-200 bg-white p-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+    <section className="space-y-6">
+      <div className="glass-card rounded-2xl p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">{selectedGroup.name}</h2>
-            <div className="text-xs text-slate-500">Anggota grup & transaksi</div>
+            <h2 className="text-2xl font-black text-brand-950 uppercase tracking-tight">{selectedGroup.name}</h2>
+            <div className="text-sm font-semibold text-brand-400">Anggota grup & transaksi</div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium hover:bg-slate-50"
+              className="rounded-full border border-brand-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-brand-600 hover:bg-brand-50 transition-colors shadow-sm"
               onClick={() => {
                 setTargetInput(hasTarget ? String(targetAmount) : '')
                 setOpenTarget(true)
@@ -124,14 +125,14 @@ export default function TransactionList() {
             </button>
             <button
               type="button"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium hover:bg-slate-50"
+              className="rounded-full border border-brand-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-brand-600 hover:bg-brand-50 transition-colors shadow-sm"
               onClick={() => setOpenMember(true)}
             >
               Tambah Anggota
             </button>
             <button
               type="button"
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-full bg-brand-900 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-brand-800 disabled:opacity-50 transition-all hover:shadow-lg hover:-translate-y-0.5"
               disabled={stableMembers.length === 0}
               onClick={openAddTx}
               title={stableMembers.length === 0 ? 'Tambah anggota dulu' : 'Tambah transaksi'}
@@ -141,14 +142,14 @@ export default function TransactionList() {
           </div>
         </div>
 
-        <div className="mt-2.5 rounded-lg border border-slate-200 p-2.5">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="text-xs font-medium text-slate-700">Target grup</div>
-            <div className="text-xs text-slate-500">
+        <div className="mt-6 rounded-xl border border-brand-100 bg-brand-50/50 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-brand-600">Progress Target</div>
+            <div className="text-xs font-semibold text-brand-500">
               {hasTarget ? (
                 <>
-                  Target: <span className="font-medium text-slate-900">{formatIDR(targetAmount)}</span>{' '}
-                  • Terpakai: <span className="font-medium text-slate-900">{formatIDR(totalSpent)}</span>
+                  Target: <span className="text-brand-900">{formatIDR(targetAmount)}</span>{' '}
+                  <span className="text-brand-300 mx-1">•</span> Terpakai: <span className="text-brand-900">{formatIDR(totalSpent)}</span>
                 </>
               ) : (
                 'Belum ada target'
@@ -156,29 +157,29 @@ export default function TransactionList() {
             </div>
           </div>
 
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="h-3 w-full overflow-hidden rounded-full bg-brand-200/50">
             <div
-              className="h-full bg-slate-900"
+              className="h-full bg-brand-900 rounded-full transition-all duration-1000 ease-out"
               style={{ width: hasTarget ? `${targetPct}%` : '0%' }}
               aria-hidden="true"
             />
           </div>
 
           {hasTarget ? (
-            <div className="mt-2 text-xs text-slate-500">
-              {targetPct.toFixed(0)}% dari target
+            <div className="mt-2 text-[11px] font-bold text-brand-400 text-right">
+              {targetPct.toFixed(0)}% TERPENUHI
             </div>
           ) : null}
         </div>
 
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-5 flex flex-wrap gap-2">
           {stableMembers.length === 0 ? (
-            <div className="text-sm text-slate-500">Belum ada anggota.</div>
+            <div className="text-sm font-medium text-brand-400">Belum ada anggota.</div>
           ) : null}
           {stableMembers.map((m) => (
             <span
               key={m.id}
-              className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700"
+              className="inline-flex items-center rounded-full bg-white border border-brand-200 shadow-sm px-3 py-1 text-xs font-bold text-brand-700"
             >
               {m.name}
             </span>
@@ -186,88 +187,100 @@ export default function TransactionList() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-2.5">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">Transaksi</h3>
-          <div className="text-xs text-slate-500">Klik Edit untuk ubah</div>
+      <div className="glass-card rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4 border-b border-brand-100 pb-4">
+          <h3 className="text-xl font-black uppercase tracking-tight text-brand-950">Transaksi</h3>
+          <div className="text-xs font-semibold text-brand-400">Klik Edit untuk ubah</div>
         </div>
 
-        <ul className="mt-2.5 divide-y divide-slate-100">
+        <ul className="divide-y divide-brand-100">
           {txs.length === 0 ? (
-            <li className="py-2 text-sm text-slate-500">Belum ada transaksi.</li>
+            <li className="py-8 text-center text-sm font-medium text-brand-400">Belum ada transaksi.</li>
           ) : null}
 
           {txs.map((tx) => {
             const payer = memberById.get(tx.paidByMemberId)
             return (
-              <li key={tx.id} className="py-2">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <div className="truncate text-sm font-medium text-slate-900">
+              <li key={tx.id} className="py-4 hover:bg-brand-50/50 transition-colors -mx-4 px-4 rounded-xl">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3 mb-1">
+                      <div className="text-lg font-bold text-brand-900 truncate">
                         {tx.note || '(tanpa catatan)'}
                       </div>
                       <span
                         className={
-                          'rounded-full px-2 py-0.5 text-xs font-medium ' +
+                          'rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ' +
                           (tx.isSettled
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-amber-50 text-amber-700')
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                            : 'bg-amber-50 border-amber-200 text-amber-700')
                         }
                       >
                         {tx.isSettled ? 'lunas' : 'belum lunas'}
                       </span>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-brand-400">
                       <span>
-                        Dibayar: <span className="text-slate-700">{payer?.name ?? '-'}</span>
+                        Oleh: <span className="text-brand-700">{payer?.name ?? '-'}</span>
                       </span>
                       <span>
-                        Tanggal: <span className="text-slate-700">{tx.dateISO ?? '-'}</span>
+                        Tgl: <span className="text-brand-700">{tx.dateISO ?? '-'}</span>
                       </span>
-                      <span>
-                        Due: <span className="text-slate-700">{tx.dueDateISO ?? '-'}</span>
+                      <span className="bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100">
+                        Due: <span className="text-brand-700">{tx.dueDateISO ?? '-'}</span>
                       </span>
-                      <span>
-                        Paid: <span className="text-slate-700">{tx.paidDateISO ?? '-'}</span>
-                      </span>
+                      {tx.isSettled && (
+                        <span className="bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 text-emerald-700">
+                          Paid: {tx.paidDateISO ?? '-'}
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-2">
-                    <div className="text-sm font-semibold text-slate-900">
+                  <div className="flex flex-col sm:items-end gap-2 shrink-0">
+                    <div className="text-xl font-black text-brand-950">
                       {formatIDR(tx.amount)}
                     </div>
-                    <button
-                      type="button"
-                      className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs hover:bg-slate-50"
-                      onClick={() => openEditTx(tx)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs hover:bg-slate-50"
-                      onClick={() => {
-                        const ok = window.confirm('Hapus transaksi ini?')
-                        if (!ok) return
-                        actions.deleteTransaction(selectedGroup.id, tx.id)
-                      }}
-                    >
-                      Hapus
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
-                      onClick={() =>
-                        actions.updateTransaction(selectedGroup.id, tx.id, {
-                          isSettled: !tx.isSettled,
-                        })
-                      }
-                      title="Toggle lunas/belum lunas"
-                    >
-                      {tx.isSettled ? 'Belum' : 'Lunas'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="rounded-lg border border-brand-200 bg-white px-3 py-1.5 text-xs font-bold text-brand-600 hover:bg-brand-50 transition-colors shadow-sm"
+                        onClick={() => openEditTx(tx)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-lg border border-brand-200 bg-white px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors shadow-sm"
+                        onClick={() => {
+                          const ok = window.confirm('Hapus transaksi ini?')
+                          if (!ok) return
+                          actions.deleteTransaction(selectedGroup.id, tx.id)
+                        }}
+                      >
+                        Hapus
+                      </button>
+                      <button
+                        type="button"
+                        className={"rounded-lg px-3 py-1.5 text-xs font-bold shadow-sm transition-all " + (tx.isSettled ? "bg-brand-100 text-brand-600 border border-brand-200 hover:bg-brand-200" : "bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md hover:-translate-y-0.5")}
+                        onClick={() => {
+                          if (!tx.isSettled) {
+                            confetti({
+                              particleCount: 100,
+                              spread: 70,
+                              origin: { y: 0.6 },
+                              colors: ['#10b981', '#34d399', '#059669']
+                            })
+                          }
+                          actions.updateTransaction(selectedGroup.id, tx.id, {
+                            isSettled: !tx.isSettled,
+                          })
+                        }}
+                        title="Toggle lunas/belum lunas"
+                      >
+                        {tx.isSettled ? 'Batalkan' : 'Lunasi'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>
