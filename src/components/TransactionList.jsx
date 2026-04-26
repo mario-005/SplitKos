@@ -97,15 +97,15 @@ export default function TransactionList() {
 
   if (!selectedGroup) {
     return (
-      <section className="rounded-xl border border-slate-200 bg-white p-4">
+      <section className="rounded-lg border border-slate-200 bg-white p-2.5">
         <div className="text-sm text-slate-600">Pilih atau buat grup dulu.</div>
       </section>
     )
   }
 
   return (
-    <section className="space-y-3">
-      <div className="rounded-xl border border-slate-200 bg-white p-3">
+    <section className="space-y-2.5">
+      <div className="rounded-lg border border-slate-200 bg-white p-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">{selectedGroup.name}</h2>
@@ -141,7 +141,7 @@ export default function TransactionList() {
           </div>
         </div>
 
-        <div className="mt-3 rounded-lg border border-slate-200 p-3">
+        <div className="mt-2.5 rounded-lg border border-slate-200 p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="text-xs font-medium text-slate-700">Target grup</div>
             <div className="text-xs text-slate-500">
@@ -171,14 +171,14 @@ export default function TransactionList() {
           ) : null}
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {stableMembers.length === 0 ? (
             <div className="text-sm text-slate-500">Belum ada anggota.</div>
           ) : null}
           {stableMembers.map((m) => (
             <span
               key={m.id}
-              className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
+              className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700"
             >
               {m.name}
             </span>
@@ -186,21 +186,21 @@ export default function TransactionList() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-3">
+      <div className="rounded-lg border border-slate-200 bg-white p-2.5">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-slate-900">Transaksi</h3>
           <div className="text-xs text-slate-500">Klik Edit untuk ubah</div>
         </div>
 
-        <ul className="mt-3 divide-y divide-slate-100">
+        <ul className="mt-2.5 divide-y divide-slate-100">
           {txs.length === 0 ? (
-            <li className="py-3 text-sm text-slate-500">Belum ada transaksi.</li>
+            <li className="py-2 text-sm text-slate-500">Belum ada transaksi.</li>
           ) : null}
 
           {txs.map((tx) => {
             const payer = memberById.get(tx.paidByMemberId)
             return (
-              <li key={tx.id} className="py-3">
+              <li key={tx.id} className="py-2">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -285,7 +285,7 @@ export default function TransactionList() {
         }}
       >
         <form
-          className="space-y-3"
+          className="space-y-2.5"
           onSubmit={(e) => {
             e.preventDefault()
             actions.addMember(selectedGroup.id, memberName)
@@ -334,7 +334,7 @@ export default function TransactionList() {
         }}
       >
         <form
-          className="space-y-3"
+          className="space-y-2.5"
           onSubmit={(e) => {
             e.preventDefault()
             actions.setGroupTarget(selectedGroup.id, targetInput)
@@ -387,7 +387,7 @@ export default function TransactionList() {
         }}
       >
         <form
-          className="space-y-3"
+          className="space-y-2.5"
           onSubmit={(e) => {
             e.preventDefault()
             if (!txForm.paidByMemberId) return

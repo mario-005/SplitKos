@@ -14,7 +14,7 @@ export default function GroupList() {
   const selectedId = selectedGroup?.id ?? null
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-3">
+    <section className="rounded-lg border border-slate-200 bg-white p-2.5">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-900">Grup</h2>
         <button
@@ -26,9 +26,9 @@ export default function GroupList() {
         </button>
       </div>
 
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-2 space-y-1.5">
         {groups.length === 0 ? (
-          <li className="rounded-lg border border-dashed border-slate-200 p-3 text-sm text-slate-500">
+          <li className="rounded-lg border border-dashed border-slate-200 p-2 text-sm text-slate-500">
             Belum ada grup.
           </li>
         ) : null}
@@ -41,7 +41,7 @@ export default function GroupList() {
                 type="button"
                 onClick={() => actions.selectGroup(g.id)}
                 className={
-                  'w-full rounded-lg border px-3 py-2 text-left transition ' +
+                  'w-full rounded-lg border px-2.5 py-1.5 text-left transition ' +
                   (active
                     ? 'border-slate-900 bg-slate-50'
                     : 'border-slate-200 hover:bg-slate-50')

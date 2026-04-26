@@ -65,7 +65,7 @@ export default function Summary() {
   }
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-3">
+    <section className="rounded-lg border border-slate-200 bg-white p-2.5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-900">Ringkasan</h3>
         <div className="text-xs text-slate-500">
@@ -74,7 +74,7 @@ export default function Summary() {
       </div>
 
       {hasTarget ? (
-        <div className="mt-3 rounded-lg border border-slate-200 p-3">
+        <div className="mt-2 rounded-lg border border-slate-200 p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="text-xs font-medium text-slate-700">Target grup</div>
             <div className="text-xs text-slate-600">
@@ -85,10 +85,10 @@ export default function Summary() {
         </div>
       ) : null}
 
-      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 p-3">
-          <div className="text-xs font-medium text-slate-700">Total hutang tiap orang</div>
-          <ul className="mt-2 space-y-2">
+      <div className="mt-2 grid grid-cols-1 gap-2.5 md:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+          <div className="text-xs font-semibold text-slate-800">Total hutang tiap orang</div>
+          <ul className="mt-1.5 space-y-1.5">
             {members.length === 0 ? (
               <li className="text-sm text-slate-500">Belum ada anggota.</li>
             ) : null}
@@ -99,29 +99,31 @@ export default function Summary() {
               const gets = Math.max(0, bal)
 
               let label = 'Seimbang'
-              let tone = 'text-slate-600'
+              let pill = 'bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200'
               if (owes > 0.01) {
                 label = `Berhutang ${formatIDR(owes)}`
-                tone = 'text-amber-700'
+                pill = 'bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200'
               }
               if (gets > 0.01) {
                 label = `Dibayar ${formatIDR(gets)}`
-                tone = 'text-emerald-700'
+                pill = 'bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200'
               }
 
               return (
                 <li key={m.id} className="flex items-center justify-between gap-3">
                   <div className="text-sm font-medium text-slate-900">{m.name}</div>
-                  <div className={"text-sm font-medium " + tone}>{label}</div>
+                  <div className={"rounded-full px-2.5 py-1 text-xs font-semibold " + pill}>
+                    {label}
+                  </div>
                 </li>
               )
             })}
           </ul>
         </div>
 
-        <div className="rounded-lg border border-slate-200 p-3">
-          <div className="text-xs font-medium text-slate-700">Siapa berhutang ke siapa</div>
-          <ul className="mt-2 space-y-2">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+          <div className="text-xs font-semibold text-slate-800">Siapa berhutang ke siapa</div>
+          <ul className="mt-1.5 space-y-1.5">
             {transfers.length === 0 ? (
               <li className="text-sm text-slate-500">Tidak ada hutang yang tersisa.</li>
             ) : null}
@@ -138,7 +140,7 @@ export default function Summary() {
                     <span className="font-medium text-slate-900">{from}</span> →{' '}
                     <span className="font-medium text-slate-900">{to}</span>
                   </div>
-                  <div className="text-sm font-semibold text-slate-900">
+                  <div className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-900 ring-1 ring-inset ring-indigo-200">
                     {formatIDR(t.amount)}
                   </div>
                 </li>
@@ -148,21 +150,27 @@ export default function Summary() {
         </div>
       </div>
 
-      <div className="mt-3 rounded-lg border border-slate-200 p-3">
+      <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
         <div className="flex items-center justify-between">
-          <div className="text-xs font-medium text-slate-700">Streak Pembayaran</div>
+          <div className="text-xs font-semibold text-slate-800">Streak Pembayaran</div>
           <div className="text-xs text-slate-500">
             Dihitung dari transaksi lunas: paidDate ≤ dueDate
           </div>
         </div>
 
-        <ul className="mt-2 space-y-2">
+        <ul className="mt-1.5 space-y-1.5">
           {streakRows.length === 0 ? (
             <li className="text-sm text-slate-500">Belum ada anggota.</li>
           ) : null}
 
           {streakRows.map((r) => {
             const hot = r.streak >= 5
+            const warm = r.streak >= 3
+            const chip = hot
+              ? 'bg-emerald-100 text-emerald-900 ring-emerald-200'
+              : warm
+                ? 'bg-sky-100 text-sky-900 ring-sky-200'
+                : 'bg-slate-100 text-slate-800 ring-slate-200'
             return (
               <li key={r.memberId} className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
@@ -173,41 +181,7 @@ export default function Summary() {
                   <div className="mt-0.5 text-xs text-slate-500">{r.badge}</div>
                 </div>
 
-                <div className="shrink-0 text-sm font-semibold text-slate-900">
-                  {r.streak}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-
-      <div className="mt-3 rounded-lg border border-slate-200 p-3">
-        <div className="flex items-center justify-between">
-          <div className="text-xs font-medium text-slate-700">Streak Pembayaran</div>
-          <div className="text-xs text-slate-500">
-            Dihitung dari transaksi lunas: paidDate ≤ dueDate
-          </div>
-        </div>
-
-        <ul className="mt-2 space-y-2">
-          {streakRows.length === 0 ? (
-            <li className="text-sm text-slate-500">Belum ada anggota.</li>
-          ) : null}
-
-          {streakRows.map((r) => {
-            const hot = r.streak >= 5
-            return (
-              <li key={r.memberId} className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div className="truncate text-sm font-medium text-slate-900">{r.name}</div>
-                    {hot ? <span className="text-sm">🔥</span> : null}
-                  </div>
-                  <div className="mt-0.5 text-xs text-slate-500">{r.badge}</div>
-                </div>
-
-                <div className="shrink-0 text-sm font-semibold text-slate-900">
+                <div className={"shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset " + chip}>
                   {r.streak}
                 </div>
               </li>
